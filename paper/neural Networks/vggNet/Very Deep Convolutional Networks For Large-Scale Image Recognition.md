@@ -61,17 +61,21 @@ VGGNet의 구조에 대한 요약을 하자면 다음과 같다.
 
 **Conv layer**  
 
-    - 3 x 3 Conv filter 사용 (3 x 3 사이즈를 사용하는 이유는 이 사이즈가 이미지 요소의 left, right, up, down 등을 파악할 수 있는 최소하느의 receptive field 이기 때문이다.)  
+    - 3 x 3 Conv filter 사용 (3 x 3 사이즈를 사용하는 이유는 이 사이즈가 이미지 요소의 left, right, up, down 등을 파악할 수 있는 최소한의  
+    receptive field 이기 때문이다.)  
     - 1 x 1 Conv filter도 사용하는데 차원을 줄이고 nin-linearity를 증가시키기 위함이다.  
-    stride는 1, padding또한 1로 설정
+    - stride는 1, padding또한 1로 설정
 
 ```
 잠깐 복습  
 
     - filter: 입력데이터를 지정된 간격으로 순회하며 채널별로 합성곱을 하여 그 합을 Feature Map으로 만들때 사용하는 크기  
     - Stride: filter를 지정된 간격만큼 띄어서 순회하는데 그 간격을 뜻함
-    - padding: filter와 stride의 작용으로 feature map의 크기는 입력 데이터보다 작다. 그래서 층이 진행될 수록 데이터가 작아지다 결국 소멸할 수 있기 때문에, 이를 방지하기 위해 입력 데이터 외각에 지정된 픽셀만큼 특정 값으로 채워넣어 크기를 키우는 것을 padding이라 한다. 보통 padding 값으로 0을 넣는다.  
-    - Pooling: 출력 데이터를 입력으로 받아 출력 데이터의 크기를 줄이거나 특정 데이터를 강조할 때 사용. Max pooling은 filter 값중 가장 큰 값을, Average pooling은 값의 평균을 출력한다.  
+    - padding: filter와 stride의 작용으로 feature map의 크기는 입력 데이터보다 작다. 그래서 층이 진행될 수록 데이터가 작아지다 결국  
+    소멸할 수 있기 때문에, 이를 방지하기 위해 입력 데이터 외각에 지정된 픽셀만큼 특정 값으로 채워넣어 크기를 키우는 것을 padding이라 한다.  
+    보통 padding 값으로 0을 넣는다.  
+    - Pooling: 출력 데이터를 입력으로 받아 출력 데이터의 크기를 줄이거나 특정 데이터를 강조할 때 사용. Max pooling은 filter 값중  
+    가장 큰 값을, Average pooling은 값의 평균을 출력한다.  
 ```
 
 **Pooling layer**  
@@ -92,3 +96,20 @@ fc layer: fully connected layer, 말그대로 모든 뉴런들이 이어진 형�
 ```
 
 그외 모든 layer에서 ReLU를 사용한다.  
+AlexNet에서 사용된 **LRN 기법은 성능 개선은 없고 메모리 사용량만 늘어나기 때문에 사용하지 않는다.**
+
+### 2.2 Configurations  
+
+<img src = "./image/8.png">  
+
+ConvNet 구성은 표로 정리해 요약했다.  
+depth에 따라 11 depth인 A구조 ~ 19 depth인 E 구조까지 있다.  
+Conv layer의 폭(채널 수)은 64부터 시작해 max pooling layer를 통과할 때마다 2의 제곱만큼 커져서 최대 512만큼 커진다.  
+depthsms smfdjskTwlaks **더 큰 conv layer를 사용한 앝은 신경망보다 파라미터 수가 줄어들었다고** 한다.  
+
+<img src="./image/9.png">  
+
+<img src="./image/10.png">  
+
+### 2.3 Discussion  
+
