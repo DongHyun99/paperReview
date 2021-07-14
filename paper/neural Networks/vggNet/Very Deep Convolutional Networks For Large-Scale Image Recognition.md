@@ -1,6 +1,9 @@
 # Very Deep Convolutional Networks For Large-Scale Image Recognition  
 
-참고: https://phil-baek.tistory.com/entry/1-Very-Deep-Convolutional-Networks-for-Large-Scale-Image-Recognition-VGGNet-%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0  
+참고 및 이미지 출처:  
+- https://phil-baek.tistory.com/entry/1-Very-Deep-Convolutional-Networks-for-Large-Scale-Image-Recognition-VGGNet-%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0  
+- https://bskyvision.com/504  
+
 
 
 ## Abstract  
@@ -113,3 +116,21 @@ depthsms smfdjskTwlaks **더 큰 conv layer를 사용한 앝은 신경망보다 
 
 ### 2.3 Discussion  
 
+#### 1개의 큰 filter를 사용하지 않고 3 x 3 filter를 여러개 사용하는 이유  
+
+5 x 5 filter 한개와 3 x 3 filter 2개는 결과적으로 동일한 크기의 feature map을 생성하는데 왜 번거로운 작업을 했을까?  
+이것은 작은 사이즈로 여러번 나눠 적용시 **layer를 거칠 때마다 ReLu도 더 많이 통과하게 되어 non-linear 한 의사결정을 더 잘하게 된다고 한다.**  
+또한 7 x 7 1개보다 3 x 3 3개가 **paraneter 수가 줄어든다. 즉 오버피팅을 줄이는 효과가 있다.**  
+C의 구조에서는 1 x1 conv를 두어 좀더 non-linear한 성격을 강화시켰다고 한다.  
+
+<img src="./image/11.png">  
+
+## 3 Classification Framework  
+  
+크게 Training과 Testing으로 나누어 설명한다.  
+
+### 3.1 training  
+
+<img src="./image/12.png">  
+
+우선 Training 부분은 하이퍼 파라미터를 어떻게 설정했는지부터 설명한다.  
