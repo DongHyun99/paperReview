@@ -1,6 +1,6 @@
 # Very Deep Convolutional Networks For Large-Scale Image Recognition  
 
-참고 및 이미지 출처:  
+> 참고 및 이미지 출처:  
 - https://phil-baek.tistory.com/entry/1-Very-Deep-Convolutional-Networks-for-Large-Scale-Image-Recognition-VGGNet-%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0  
 - https://bskyvision.com/504  
 
@@ -134,3 +134,60 @@ C의 구조에서는 1 x1 conv를 두어 좀더 non-linear한 성격을 강화�
 <img src="./image/12.png">  
 
 우선 Training 부분은 하이퍼 파라미터를 어떻게 설정했는지부터 설명한다.  
+
+**Cost Function**  
+    - Multinomial logistic regression objective = Cross Entropy (교차 엔트로피)  
+
+**Mini batch**  
+    - 256 Size  
+
+**Optimizer**  
+    - Momentum = 0.9  
+
+**Regularization**  
+    - L2 = 5.10^-4  
+    - Dropout = 0.5  
+
+> Regularization이란?: https://m.blog.naver.com/laonple/220527647084  
+
+**Learning rate**  
+    - 10^-2 (Validation error rate가 높아질수록 10^-1씩 감소한다.)  
+
+여기서 **AlexNet보다 더 깊고 parameter도 더 많지만, 더 적은 epoch을 기록**했는데 이는 다음 2가지 덕분이다.  
+
+    1. Implicit regularisation  
+        앞서 말한 필커의 크기를 줄이고 여러개를 사용한 덕분
+
+    2. Pre-initialization  
+        A 모델에 먼저 학습 후 다음 모델 구성시 A 모델에 학습된 layer를 사용하여 최적의 초기값 설정  
+        (A 모델의 처음 4개 layer + 마지막 3개의 FC layer)  
+
+**Training image Size**  
+
+<img src="./image/13.png">  
+
+모델 학습시 training image를 VGG 모델의 input size에 맞게 바꿔주는 과정이 필요함  
+input size의 scale=S라고 할때,  
+S가 224인경우 training image의 가로, 세로 중 더 작은 쪽을 224에 맞춰준다.  
+그리고 원사이즈의 비율을 지켜 사이즈를 rescaling한다.  
+이것을 **isotropically-rescaled**라고 한다.  
+rescaled 된 이미지에서 random하게 224 x 224 size로 crop 하여 input size에 맞춘다.  
+
+<img src="./image/14.png">  
+<img src="./image/15.png">  
+
+여기서 S의 값을 설정하는데에는 두가지 방식이 있다.  
+
+1. Single-scale training  
+
+이 방식은 S를 256 or 384로 고정 하는 것인데 S가 384인 네트워크는 학습 속도를 높이기 위해 256으로 학습시킨 가중치를 기반으로 S를 384로 설정해 다시 학습시킨다.  
+이미 학습이 어느정도 되어있기 때문에 384로 변경한 후에는 learning rate를 줄이고 학습한다.  
+
+2. Multi-scale training  
+
+이 방식은 S를 고정하지 않고 256~512에서 임의로 값을 설정한다.  
+보통 이미지들은 모두 같은 사이즈가 아니기 때문에 random하게 multi-scale로 학습하면 학습 효과가 더 좋아진다. 이를 **Scale Jittering**이라고 한다.  
+속도상의 이유로 S=384로 pre-trained 된 모델로 fine-tunung 시킨다.  
+
+>fine tuning이란?: https://eehoeskrap.tistory.com/186  
+
