@@ -191,3 +191,28 @@ rescaled 된 이미지에서 random하게 224 x 224 size로 crop 하여 input si
 
 >fine tuning이란?: https://eehoeskrap.tistory.com/186  
 
+### 3.2 testing  
+
+<img src ="./image/16.png">  
+
+테스트 시, ConvNet과 입력 이미지가 주어지면 다음 방식으로 분류된다.  
+
+1. **training image를 rescle 하는 것처럼 test시에도 rescale한다.**  
+rescale하는 scale을 Q라고 하는데 여기서 주목해야 할 것은 **S와 Q가 같은 필요가 없다는 것**이다.  
+각각의 S값마다 다른 Q를 적용했을 때 VGG 모델의 성능이 좋아진다.  
+(Validation set을 이용해 평가와 동시에 학습힌다고 한다.)  
+
+2.  뒤 FC layer를 Conv layer로 변환한다. 첫번째 FC layer는 7 x 7 conv layer로, 마지막 두 개의 FC layer는 1 x 1 conv layer로 변환한다.  
+**FC layer가 conv layer로 변경되었기 때문에 Test에서 uncropped image를 사용할 수 있게된다.**  
+결과적으로 최종 output feature map size는 input image size에 의해서 결정된다. 이렇게 나온 feature map은 class score map이라고 부른다.  
+이미지의 고정된 사이즈의 class score를 얻기 위해서 average pooling을 하고, softmax를 거친다음 flipped image와 original이미지의 평균 값을 통해 최종 score를 출력한다.  
+
+<img src="./image/17.png">  
+
+Fully-conv network를 사용하여 test시 image를 crop할 필요가 없다. 
+그리고 crop image를 input 데이터로 사용했다. 이 두가지 독분에 정확도가 향상될 수 있었다.  
+최종적으로는 성능을 끌어올리기 위해 multi-crop 방식과 dense dvaluation 방식을 섞어서 사용했다.  
+
+## 4 Classification Experiments
+
+4장은 실험 결과에 대한 설명이다.  
