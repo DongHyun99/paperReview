@@ -1,5 +1,7 @@
 # Very Deep Convolutional Networks For Large-Scale Image Recognition  
 
+<img src="./image/0.png">  
+
 > 참고 및 이미지 출처:  
 - https://phil-baek.tistory.com/entry/1-Very-Deep-Convolutional-Networks-for-Large-Scale-Image-Recognition-VGGNet-%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0  
 - https://bskyvision.com/504  
@@ -216,3 +218,16 @@ Fully-conv network를 사용하여 test시 image를 crop할 필요가 없다.
 ## 4 Classification Experiments
 
 4장은 실험 결과에 대한 설명이다.  
+```
+- DataSet: ILSVRC-2012 DataSet  
+- 분류 성능 평가 (evaluation): top-1, top-5 error
+    top-1: 잘못 분류된 비율
+    top-5: ILSVRC 평가 기준  
+```  
+
+### 4.1 Single Scale Evaluation  
+
+ - Single Scale Evaluation: test 시 이미지가 고정되어 있는 것  
+ S=256 or S=384로 고정하는 Single Scale Training 방식과 256~512에서 random하게 고르는 Multi Scale Training  방식이 있다.  
+ Single Scale Training의 경우에는 S=Q 사이즈로 test image size가 고정되고, Multi Scale Training에서는 0.5(256+512)=384로 고정된다.  
+ (이게 무슨 소리지?)  
