@@ -7,3 +7,5 @@
   - EfficientNet
 
   - ResNext
+ 
+  - SSD
