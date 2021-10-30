@@ -15,7 +15,7 @@ Andrew ng 교수의 논문 읽기와 ML/DL 커리어에 대한 조언
     - 논문 한개를 어떻게 읽을 것인가?
         - 처음부터 끝까지 정독 x, 부분적으로 생략하고 여러번 읽기
 3. 논문 제목(title)과 초록(abstract), 도표(figures) 먼저 읽기
-4. 도입(imstruction), 결론(conclusion), 도표(figures)를 읽고 필요 없는 부분 생략
+4. 도입(instruction), 결론(conclusion), 도표(figures)를 읽고 필요 없는 부분 생략
     - 특히 관련 연구부분 생략 (이해가 어려울 수 있음)
 5. 수식은 과감히 생략!
 6. 이해가 안되는 부분 빼고 전체적으로 읽기
