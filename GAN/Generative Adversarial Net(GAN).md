@@ -1,4 +1,4 @@
-# Generative Adversarial Net
+# Generative Adversarial Net(GAN)
 
 ## Abstract
 
@@ -26,3 +26,16 @@
     - G가 매우 진짜같은 데이터를 생성했을 때, 이상적으로 얻을 수 있는 최대 결과 = -무한대
 
 결론적으로 D는 V(D,G)를 최대화하려하고, G는 V(D,G)를 최소화 하는것이 목적이다. 논문에서는 이를 two-player minimax game으로 표현했다.  
+
+## 4 Theoretical Results  
+
+![img](./Asset/2.png)  
+
+- 검은색 점선: data generating distribution (real)  
+- 초록색 실선: generative distribution(fake)  
+- 파란색 점선: discriminative distribution  
+
+(a) 처음에는 성능이 좋지 않음  
+(b) D가 분명하게 판별함
+(c) D가 잘 판단하지 못하도록 G가 학습
+(d) real image와 fake image의 구분이 힘들어지고, D는 확률을 1/2로 계산  
