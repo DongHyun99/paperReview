@@ -31,4 +31,21 @@
     - 다만 GAP은 안정적인 만큼 수렴속도를 낮춘다.
     - 그래서 Convolution 된 feature를 Discriminator와 Generator에 그냥 연결해 봤는데 잘 작동했다고 한다.  
 
-3. 
+3. BatchNormalization 적용
+    - 모든 층에 BN을 쓸 경우 학습이 불안정해지므로, Generator의 출력층과 입력층에는 BN을 사용하지 않았다.  
+
+출력층의 Tanh function을 제외한 Generator의 나머지 부분에는 ReLU를 사용했고, Discriminator에는 leaky ReLU를 사용했더니 고해상도 모델링에 좋은 효과를 보여줬다.  
+(Vanilla GAN에서 maxout activation을 사용한 것과 차별점이 있다.)  
+
+## 4 Details Of Adversarial Training  
+
+DCGAN의 훈련은 총 3가지로 진행되었다.  
+(Large-scale Scene Understanding (LSUN), Imagenet-1k, Faces 데이터셋)  
+
+이미지의 품질이 좋아져서 과적합이 우려됨.
+    
+    - Augmentation을 적용하지 않았다.  
+    - Deduplication 기법을 (데이터의 중복적인 부분 제거) 통해 오버피팅을 방지했다.  
+
+## 5 Empirical Validation of DCGANs Capabilities
+
