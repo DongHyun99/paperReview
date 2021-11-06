@@ -72,7 +72,7 @@ class Generator(nn.Module):
 ```  
 
 FC Layer와 LeakyReLU를 겹겹이 쌓고 필요한 경우에는 Batch Normalization을 해준다.  
-마지막 FCLayer는 Batch Normalization을 하지 않고 활성화 함수로 tanh를 사용한다.  
+마지막 FC Layer는 Batch Normalization을 하지 않고 활성화 함수로 tanh를 사용한다.  
 
 ##  Discriminator 
 
@@ -96,3 +96,5 @@ class Discriminator(nn.Module):
 
         return validity
 ```  
+
+마찬가지로 FC Layer와 LeakyReLU를 겹겹이 쌓고 마지막 FC Layer는 활성화 함수로 Sigmoid를 사용한다. 
