@@ -39,3 +39,60 @@
 (b) D가 분명하게 판별함
 (c) D가 잘 판단하지 못하도록 G가 학습
 (d) real image와 fake image의 구분이 힘들어지고, D는 확률을 1/2로 계산  
+
+# GAN 코드 분석 (Pytorch)
+
+## Generator  
+
+``` python
+class Generator(nn.Module):
+    def __init__(self):
+        super(Generator, self).__init__()
+
+        def block(in_feat, out_feat, normalize=True):
+            layers = [nn.Linear(in_feat, out_feat)]
+            if normalize:
+                layers.append(nn.BatchNorm1d(out_feat, 0.8))
+            layers.append(nn.LeakyReLU(0.2, inplace=True))
+            return layers
+
+        self.model = nn.Sequential(
+            *block(opt.latent_dim, 128, normalize=False),
+            *block(128, 256),
+            *block(256, 512),
+            *block(512, 1024),
+            nn.Linear(1024, int(np.prod(img_shape))),
+            nn.Tanh()
+        )
+
+    def forward(self, z):
+        img = self.model(z)
+        img = img.view(img.size(0), *img_shape)
+        return img
+```  
+
+FC Layer와 LeakyReLU를 겹겹이 쌓고 필요한 경우에는 Batch Normalization을 해준다.  
+마지막 FCLayer는 Batch Normalization을 하지 않고 활성화 함수로 tanh를 사용한다.  
+
+##  Discriminator 
+
+``` python
+class Discriminator(nn.Module):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+
+        self.model = nn.Sequential(
+            nn.Linear(int(np.prod(img_shape)), 512),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(256, 1),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, img):
+        img_flat = img.view(img.size(0), -1)
+        validity = self.model(img_flat)
+
+        return validity
+```  
