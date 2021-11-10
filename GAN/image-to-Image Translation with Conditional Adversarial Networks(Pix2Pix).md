@@ -51,6 +51,13 @@ y가 GT인 real image이고 z가 random noize vector, x는 CGAN의 조건에 해
 
 ### 3.2 Network architectures  
 
-DCGAN과 다르게, Generator와 Discriminator에 Convolution-BatchNorm-ReLU의 구조를 사용했다고 한다.  
+DCGAN과 같이, Generator와 Discriminator에 Convolution-BatchNorm-ReLU의 구조를 사용했다고 한다.  
 
-#### 3.2.1 Generator with skips
+#### 3.2.1 Generator with skips  
+
+image-to-image translation에서는 큰 이미지를 입력 받아 큰 이미지로 출력한다. 입력과 츨력의 표면은 바르지만, 기본 구조는 같다.  
+이 점을 고려해서 generator를 설계할 때, encoder-decoder의 구조를 흔히 사용한다.  
+근데 이런 구조는 Bottleneck layer를 통과하며 downsampling 하기 때문에 정보가 손실된다.  
+이런 병목현상을 해소하기 위해 skip-connection을 추가한 U-Net 구조를 Generator에 사용했다.  
+![img](./Asset/7.png)  
+
