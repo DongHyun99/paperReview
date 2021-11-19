@@ -61,3 +61,13 @@ image-to-image translation에서는 큰 이미지를 입력 받아 큰 이미지
 이런 병목현상을 해소하기 위해 skip-connection을 추가한 U-Net 구조를 Generator에 사용했다.  
 ![img](./Asset/7.png)  
 
+#### 3.2.2 Markovian discriminator (PatchGAN)  
+
+L1, L2 Loss는 고차원의 특성을 살리지 못하여 이미지를 흐리게 한다. 그러나 저차원에 대한 특성은 잘 포착한다고 한다.  
+즉 GAN Discriminator는 고차원 특성을 뽑고, L1 Loss를 통해 저차원 특성을 뽑아내주는 구조를 생각했다.   
+이를 위해 Discriminator를 PatchGAN에서 뽑아왔다. PatchGAN은 이미지를 각 Patch로 쪼개서 진짜인지 가짜인지를 구별하는데 세세한 특징을 (고수준의) 이미지에서 잡아낼 수 있다.  
+
+그리고 이를 통해 더 작은 이미지를 집어넣게 됨으로(Patch), 파라미터가 더 작고 더빠르고 큰 이미지에도 적용할 수도 있다.  
+
+### 3.3. Optimization and inference  
+
