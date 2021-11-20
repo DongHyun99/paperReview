@@ -71,3 +71,4 @@ L1, L2 Loss는 고차원의 특성을 살리지 못하여 이미지를 흐리게
 
 ### 3.3. Optimization and inference  
 
+Discriminator 한번, Generator 한번 번갈아 가면서 학습한다.  
