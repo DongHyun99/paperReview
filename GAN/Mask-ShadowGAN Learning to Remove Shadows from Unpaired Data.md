@@ -29,7 +29,7 @@ Shadow removal problem은 빛의 광량이나 그림자의 크기 및 모양이 
 ![img](./Asset/10.png)  
 
 (a)는 Shadow image를 통해 학습하고 (b)는 Shadow-free image를 통해 학습한다.  
-Loss는 Cycle-consistancy loss(노랑), identity loss(초록), adversarial loss(파랑)의 3가지를 사용했다.  
+Loss는 Cycle-consistency loss(노랑), identity loss(초록), adversarial loss(파랑)의 3가지를 사용했다.  
 
 (여기서 identity loss는 색감 등을 보조해주는 loss로써, L1 Loss와 연관이 있다. CycleGAN은 직접적인 pair data가 없어 L1 Loss 사용이 불가능하지만 생성 이미지를 이용해서 간접적으로 Generator에 loss를 적용한 듯하다. 자세한 내용은 CycleGAN 참조)  
 
@@ -41,13 +41,13 @@ Loss는 Cycle-consistancy loss(노랑), identity loss(초록), adversarial loss(
 <img src="./Asset/12.png" width="70%">  
 
 E(입실론)은 error를 뜻한다고 한다.  
-Adversarial Loss 만으로는 과적합 될 수 있으므로, Cycle consistancy를 적용한다.  
+Adversarial Loss 만으로는 과적합 될 수 있으므로, Cycle consistency를 적용한다.  
 이 때, 앞서 말한 것처럼 Shadow free image(If)에 Mask image라는 가이드라인을 합쳐야지 이미지 복원이 가능하다.  
 
 <img src="./Asset/13.png" width="70%">  
 
 여기서 Mask image인 Ml은 원본 그림자 이미지와 Gf를 통해 만들어진 Shadow free image의 차이다.  
-그리고 Gs와 Gf의 mapping 함수를 최적화 하기위한 Cycle consistancy loss를 적용하면 다음과 같아진다.  
+그리고 Gs와 Gf의 mapping 함수를 최적화 하기위한 Cycle consistency loss를 적용하면 다음과 같아진다.  
 
 ![img](./Asset/14.png)  
 
