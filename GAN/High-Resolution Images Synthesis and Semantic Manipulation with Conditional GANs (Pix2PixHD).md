@@ -16,12 +16,35 @@ conditional GAN은 높은 해상도에서 사용하기 힘들었는데 새로운
 
 ## 1. Introduction  
 
-데이터 학습 모델(DL)을 통해 realistic한 이미지를 렌더링 할수 있으면 가상 셰계를 생성하는 프로세스를 간소화 할수 있을 것이다.  
-왜냐하면, 조명이라던가 환경적인 요소를 사용자가 직접 모델링 해야 하는데 그런 것들을 자동화해주기 때문이다.  
-
 논문에서는 앞서 설명했듯 sementic label map을 통해 높은 해상도의 realistic 한 이미지를 생성했다. 그리고 여기서 사용된 메소드는 응용할 수 있는 범위가 넓다.  
 
 이를 위해서는 image-to-image translation에서 사용되는 (conditional GAN을 활용하는) Pix2Pix 방법을 사용한다. 다만 Pix2Pix는 높은 해상도의 작업에서는 좋은 결과물을 보여주지 못했다고 한다.  
 따라서 질감과 미세한 디테일을 살리기 위해 Perceptual Loss를 사용한다.
 
-일단 처음에는 따로 Perceptual loss 등에 
+일단 처음에는 따로 pre trained network, Perceptual loss 등 추가적인 것 들을 사용하지 않고 adversarial training만을 진행한다.  
+다음으로 만약 pretrained network가 있다면 pretrained 된 네트워크의 perceptual loss를 추가하여 결과를 좀더 개선할 수 있다.  
+
+![img](./Asset/20.png)  
+![img](./Asset/21.png)  
+
+또한 Abstract에서 언급한 것처럼 상호 semantic manipulation을 지원하기위해서 두가지의 방법을 사용했다.
+
+    1. instance leveldml 객체 segmentation 정보를 이용해서 동일한 범주에서 서로 다른 객체를 분리할수 있다.
+        - 이를 이용해 객체를 추가/제거하거나 객체의 유형을 변경할 수 있다고 한다.
+    2. 동일 입력 label에 대해 디양한 결과를 생성해 사용자가 객체의 모양을 상호적으로 편집할 수 있도록 한다.  
+
+![img](./Asset/22.png)  
+
+## 2. Related Work  
+
+### Generative Adversarial networks
+생략  
+
+### Image-to-Image translation  
+생략
+
+### Deep visual manipulation
+
+근 몇년간 Deep Neural network(DNN)는 image processing task에서 좋은 결과를 보여왔다. (Inpainting, Colorization, Restoration ...)  
+그러나 출력 공간 탐색, 결과 조정등을 하기에는 인터페이스가 딱히 없었다..  
+
