@@ -90,5 +90,18 @@ Coarse-tofine generator는 Generator를 하위 네트워크 2개(G1, G2)로 분�
 
 (먼저 resolution이 적은 이미지를 G1이 훈련하고, G2가 G1에 추가되어 고해상도 이미지에 대해 같이 훈련한다. 특히 G2의 Residual block의 입력은 G2의 feature map과 G1의 마지막 feature map의 요소 합이다.)  
 
-Global Generator network는 1024 x 512 해상도에서 작동하고 Local Enhancer Network는 이전 출력 크기의 4배 (가로 2배, 세로 2배)의 해상도로 이미지를 출력한다.  
-더 높은 해상도의 이미지 합성을 위해서 추가적인 Local Enhancer Network를 
+**Global Generator network**는 1024 x 512 해상도에서 작동하고 Local Enhancer Network는 이전 출력 크기의 4배 (가로 2배, 세로 2배)의 해상도로 이미지를 출력한다.  
+더 높은 해상도의 이미지 합성을 위해서 추가적인 Local Enhancer Network를 사용할 수도 있다.
+
+ex) G={G1, G2}의 출력 이미지 해상도는 2048 x 1024이고 G={G1, G2, G3}의 출력 이미지 해상도는 4096 x 2048이다.  
+
+global generator는 Perceptual loss 논문에서 제안된 generator 구조를 사용한 것 같다.  
+Generator는 맨앞에 G1(F), Residual Block인 G1(R), 맨뒤에 G1(B) 이렇게 3가지 구조로 나뉘어 있다.(Front-end, Residual, Back-end를 의미하는 듯)  
+
+근데 이해가 잘 안가는게 Perceptual Loss에서는 최대 512 x 512 사이즈를 성공시켰다고 하는데 여기서 Global Generator에 입력하는 이미지의 사이즈는 1024 x 512이다...  
+
+어쨌든 1024 x 512 사이즈를 순차적으로 Global Generator에 넣어 1024 x 512의 이미지를 출렵받는다.  
+
+**Local Enhancer Network** 또한 Global Generator network와 마찬가지로 3가지 구조로 구성되어있다.(이것도 마찬가지로 G2(F), G2(R), G2(B)이다.)  
+G2의 입력은 2048 x 1024로 받아온다. (G2(F))  
+그리고 G2(R)의 경우 특이하게도 두개의 feature map의 요소합을 입력으로 받는다.  
