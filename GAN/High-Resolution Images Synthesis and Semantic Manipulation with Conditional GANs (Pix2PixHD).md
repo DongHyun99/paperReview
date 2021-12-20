@@ -60,3 +60,35 @@ conditional GAN은 높은 해상도에서 사용하기 힘들었는데 새로운
 
 Pix2Pix는 GAN으로 Generator G와 Discriminator D를 가지고 있다. 
 G는 semantic label map을 ralistic한 이미지로 변환하고 D는 실제 이미지와 G에서 생성된 이미지를 비교하는 역할을 수행한다.  
+여기서 Pair data로 {[si, xi]}가 주어진다. (si: semantic label map, xi: 실제 사진)  
+Conditional GAN은 다음과 같은 minimax game을 통해 semantic label map이 실제 이미지의 조건 분포를 모델링하는것을 목표로 한다.  
+(말이 어려운데, 아무래도 minimax game을 통해 실제 이미지로 translation 하는것을 잘 학습하는거를 목표로 한다는 것 같다.)  
+
+![img](./Asset/23.png)  
+
+Pix2Pix는 최대 256 x 256의 이미지를 생성한다. 더 높은 해상되에서는 학습이 불안정하고 품질이 좋지 않다고 한다.  
+이를 개선하기 위한 솔루션을 아래에 소개했다.  
+
+### 3.2. Improving Photorealism and Resolution  
+
+Pix2Pix 네트워크의 개선에 사용한 솔루션은 3가지이다.  
+
+    1. Coarse-tofine generator
+    2. multi-scale discriminator architecture  
+    3. robust adversarial learning objective function  
+
+***Coarse-tofine generator***  
+
+Coarse-tofine generator는 Generator를 하위 네트워크 2개(G1, G2)로 분해한 것이다.  
+
+* G1: Global Generator Network (생성 네트워크)
+* G2: Local Enhancer Network (강화 네트워크)  
+
+발전기 G={G1, G2}는 다음과 같이 주어진다.  
+
+![img](./Asset/24.png)  
+
+(먼저 resolution이 적은 이미지를 G1이 훈련하고, G2가 G1에 추가되어 고해상도 이미지에 대해 같이 훈련한다. 특히 G2의 Residual block의 입력은 G2의 feature map과 G1의 마지막 feature map의 요소 합이다.)  
+
+Global Generator network는 1024 x 512 해상도에서 작동하고 Local Enhancer Network는 이전 출력 크기의 4배 (가로 2배, 세로 2배)의 해상도로 이미지를 출력한다.  
+더 높은 해상도의 이미지 합성을 위해서 추가적인 Local Enhancer Network를 
