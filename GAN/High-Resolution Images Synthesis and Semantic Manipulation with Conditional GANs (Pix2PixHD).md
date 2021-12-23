@@ -103,5 +103,12 @@ Generator는 맨앞에 G1(F), Residual Block인 G1(R), 맨뒤에 G1(B) 이렇게
 어쨌든 1024 x 512 사이즈를 순차적으로 Global Generator에 넣어 1024 x 512의 이미지를 출렵받는다.  
 
 **Local Enhancer Network** 또한 Global Generator network와 마찬가지로 3가지 구조로 구성되어있다.(이것도 마찬가지로 G2(F), G2(R), G2(B)이다.)  
-G2의 입력은 2048 x 1024로 받아온다. (G2(F))  
-그리고 G2(R)의 경우 특이하게도 두개의 feature map의 요소합을 입력으로 받는다.  
+G2(F)의 입력은 2048 x 1024로 받아온다. 
+그리고 G2(R)의 경우 특이하게도 두개의 feature map의 요소합을 입력으로 받는데, 하나는 
+G2(F)의 output feature map,  두번째는 G1(B)의 output feature map이다. (이 두개를 요소합 한 결과물을 입력으로 받는다. 즉 G1(B)와 G2(F)의 마지막 feature map의 사이즈가 같다.)  
+
+훈련의 진행은 먼저 Global Generator Network(G1)를 훈련 시키고 Local Enhancer를 순서에 따라 훈련시키게 된다.  
+그런다음 전체적인 네트워크 구조를 fine-tuning 한다고 한다. 이 Generator 구조를 이용해서 global and local information에 대한 이미지 systhesis 작업을 수행한다.  
+-> 이게 뭔소린가 했는데 multi resolution pipeline을 통해 더 좋은 결과물을 얻었다는 것 같다. 작은 resolution에 의한 학습과 큰 resolution에 의한 학습을 했다는 것을 말하는 듯  
+
+***Multi-scale discriminators***
