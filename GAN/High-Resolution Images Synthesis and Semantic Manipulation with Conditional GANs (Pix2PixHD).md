@@ -102,7 +102,7 @@ Generator는 맨앞에 G1(F), Residual Block인 G1(R), 맨뒤에 G1(B) 이렇게
 
 어쨌든 1024 x 512 사이즈를 순차적으로 Global Generator에 넣어 1024 x 512의 이미지를 출렵받는다.  
 
-**Local Enhancer Network** 또한 Global Generator network와 마찬가지로 3가지 구조로 구성되어있다.(이것도 마찬가지로 G2(F), G2(R), G2(B)이다.)  
+***Local Enhancer Network*** 또한 Global Generator network와 마찬가지로 3가지 구조로 구성되어있다.(이것도 마찬가지로 G2(F), G2(R), G2(B)이다.)  
 G2(F)의 입력은 2048 x 1024로 받아온다. 
 그리고 G2(R)의 경우 특이하게도 두개의 feature map의 요소합을 입력으로 받는데, 하나는 
 G2(F)의 output feature map,  두번째는 G1(B)의 output feature map이다. (이 두개를 요소합 한 결과물을 입력으로 받는다. 즉 G1(B)와 G2(F)의 마지막 feature map의 사이즈가 같다.)  
@@ -111,4 +111,31 @@ G2(F)의 output feature map,  두번째는 G1(B)의 output feature map이다. (�
 그런다음 전체적인 네트워크 구조를 fine-tuning 한다고 한다. 이 Generator 구조를 이용해서 global and local information에 대한 이미지 systhesis 작업을 수행한다.  
 -> 이게 뭔소린가 했는데 multi resolution pipeline을 통해 더 좋은 결과물을 얻었다는 것 같다. 작은 resolution에 의한 학습과 큰 resolution에 의한 학습을 했다는 것을 말하는 듯  
 
-***Multi-scale discriminators***
+***Multi-scale discriminators***  
+
+GAN Discriminator가 큰 resolution을 가진 이미지를 학습하기 위해서는 깊은 네트워크 및 큰 convolution kernel이 필요하다. 그러나 네트워크 용량이 커지고 과적합을 유발한 가능성이 있다. + 훈련시에 더 큰 메모리를 사용해 높은 컴퓨팅 성능을 요구한다.  
+
+이를위해 Pix2PixHD에서는 **multi-scale discriminator**를 제안한다. 네트워크 구조는 같지만 이미지 scale이 다른 3가지의 Discriminator를 사용한다. (D1, D2, D3)  
+high resolution의 이미지를 2와 4의 배수로 down-sampling해서 이미지 피라미드를 만든다고 한다.  
+이 3가지 scale(원본, 2의 배수로 down-sampling한 이미지, 4의 배수로 down-sampling한 이미지)을 이용해 실제와 fake 이미지를 구별할 수 있도록 훈련된다.  
+가장 coarsest scale인 Discriminator는 가장큰 receptive field를 가진다. 즉 필터의 크기가 크다.  
+multi-scale discriminator를 사용하면 이미지를 더 전체적으로 볼수 있고 Generator가 더 일관된 이미지를 생성하도록 도와준다고 한다.  
+
+그리고 낮은 해상도의 모델을 더 높은 해상도로 확장하여 학습할 경우 처음부터 다시 훈련해야 하지만, Pix2PixHD의 경우 더 높은 수준의 Discriminator를 추가해 주면 되기 때문에 Generator 훈련에도 용이하다.  
+만약 Multi-scale discriminator를 적용하지 않을 경우 반복되는 패턴이 있는 이미지가 더 잘 생성되었다고 한다.  
+
+Multi-scale Discriminator를 적용했을 때의 GAN Loss는 다음과 같다.  
+
+![img](./Asset/25.png)  
+
+unconditionalGAN에서도 여러개의 Discriminator를 이용해 inpainting에 이용하려던 연구가 있었는데, Pix2PixHD는 여러가지 scale에 대한 Discriminator를 만들어서 고해상도 이미지의 모델링에 활용한다.  
+
+***Improved adversarial loss***  
+
+GAN loss에 Discriminator에 기반한 feature matching loss를 합쳐서 GAN loss를 개선했다.  
+Generator가 multi-scale에 대한 훈련을 진행하여 훈련이 더 안정화된다고 한다.  
+실제 이미지와 생성된 이미지의 차이를 Discriminator의 각 레이어별 feature를 통해 학습한다.  
+fature matching loss LFM(F, Dk)은 다음과 같이 계산된다.
+![img](./Asset/26.png)  
+(여기서 Dk(i)는 입력부터 Dk의 i번째 레이어까지를 뜻한다.)  
+
