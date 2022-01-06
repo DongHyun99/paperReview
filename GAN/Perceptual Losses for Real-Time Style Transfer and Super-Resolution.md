@@ -1,0 +1,49 @@
+# Perceptual Losses for Real-Time Style Transfer and Super-Resolution(Perceptual Loss)  
+
+Perceptual Loss는 2016년 Stanford 대학교에서 발표한 논문으로 오래된 논문임에도 최근까지도 자주 사용되는 손실함수이다.  
+
+## Abstract  
+
+보통 Image transformation problem에서는 per-pixel loss를 주로 사용하여 GT 이미지와 생성된 이미지를 비교한다.  
+논문은 Pre-trained 된 네트워크에서 추출한 high-level의 feature를 기반으로 기존 방식의 장점을 결합한 Perceptual Loss를 제안한다. 그리고 이에대한 최적화 문제를 해결하기위한 방법을 제시한다.  
+기존의 Per-pixel Loss를 Perceptual Loss로 대체할 경우 Super-resolution에서 훨씬 보기좋은 결과를 얻을수 있다 한다.  
+
+## 1 Introduction  
+
+Image transformation은 Per-Pixel loss를 사용하여 출력 이미지와 실제 GT 이미지의 차이를 측정하는 Supervised learning을 통해 해결하곤 한다.  
+그러나 Per-Pixel loss는 출력 이미지와 GT 이미지 사이의 Perceptual한 차이를 구분해내지 못하는 단점이 존재한다.  
+예를 들어서 두 이미지사이에 1픽셀 씩 차이가 존재하면 (1칸씩 밀린다거나), 유사성에 대해서 판단하기가 힘들다.  
+
+따라서 Pre-trained 된 CNN에서 추출된 High-level의 feature간의 차이를 기반으로 하는 손실함수를 사용해 고품질의 이미지를 생성하는 연구들이 진행되고 있다.
+
+논문은 Style Transfer와 single-image Super-Resolutiond이라는 2가지 task에 대한 실험을 진행했다.  
+하지만 Style Transfer의 경우 정답으로 정해진 label이 따로 없고, Super-Resolution은 하나의 저해상도 이미지가 만들수 있는 고해상도 이미지가 수없이 많기 때문에, 두 task가 성공하기 위해서는 의미론적인 추론(semantic reasoning)이 필요하다.  
+
+Style Transfer는 색상과 질감은 크게 바뀌지만, 출력이 sementic하게 입력과 유사해야 하고, Super-Resolution은 모호한 저해상도 이미지에 대해서 디테일한 이미지를 추론해야 할 필요가 있다.  
+
+기본적으로 두 task를 수행하는 각각의 모델은 의미론적 추론에 대해서 학습해야 하지만, Perceptual loss를 사용하면 처음부터 배울 필요가 없다.  추론 과정을 Perceptual Loss가 대체해주기 때문이다.  
+
+그렇기 때문에 논문에서 제시한 방식의 결과물은 다른 모델들과 비슷하지만 속도가 3배 정도 더 빠르다고 한다. 특히 Super-Resolution task는 손실함수를 Perceptual Loss로 대체할 경우 x4, x8시 만족스러운 결과를 얻을수 있다.  
+
+![img](./Asset/27.png)
+
+## 2 Related Work  
+
+***Feed-forward image transformation.***  
+
+근 몇년간은 DNN과 per-pixel loss를 이용한 image transformation 방식이 대세였다.  
+
+***Perceptual Optimization.***  
+
+최근의 논문들을 보면 CNN을 통해 만들어진 high-level feature를 통한 최적화 방식으로 고품질 이미지를 생성해 내고 있다.  
+
+***Style Transfer.***  
+
+Gatys et al은 feature reconstruction loss와 style reconstruction loss를 pre-trained 된 CNN에서 추출한 featured를 사용하여 Style Transfer를 수행하였다.  
+
+***Image super-resolution.***  
+
+Super Resolution은 오래전부터 연구되던 분야로 수많은 평가지표들이 개발되어왔다.  
+
+## 3 Method  
+
