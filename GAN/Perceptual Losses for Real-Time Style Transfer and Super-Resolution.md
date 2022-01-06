@@ -47,3 +47,10 @@ Super Resolution은 오래전부터 연구되던 분야로 수많은 평가지�
 
 ## 3 Method  
 
+![img](./Asset/28.png)  
+
+위 그림처럼 논문에서 제안하는 네트워크는 두가지의 components를 가진다.  
+
+    - image transformation network (fw)
+    - loss network (Φ) (l1, l2, ..., lk까지 몇가지 손실함수를 가지고 있음)  
+
