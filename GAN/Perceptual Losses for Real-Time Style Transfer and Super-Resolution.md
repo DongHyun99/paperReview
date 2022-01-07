@@ -54,3 +54,5 @@ Super Resolution은 오래전부터 연구되던 분야로 수많은 평가지�
     - image transformation network (fw)
     - loss network (Φ) (l1, l2, ..., lk까지 몇가지 손실함수를 가지고 있음)  
 
+image transformation network는 Deep residual CNN으로 input image ```x```에 대한 output image ```y^```가 출력되는 구조로 이루어져있다.  
+각각의 손실함수 li는 출력 이미지 y^와 yi사이의 차이를 측정한다.  
