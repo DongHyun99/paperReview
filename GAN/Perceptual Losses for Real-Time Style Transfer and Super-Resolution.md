@@ -54,5 +54,46 @@ Super Resolution은 오래전부터 연구되던 분야로 수많은 평가지�
     - image transformation network (fw)
     - loss network (Φ) (l1, l2, ..., lk까지 몇가지 손실함수를 가지고 있음)  
 
-image transformation network는 Deep residual CNN으로 input image ```x```에 대한 output image ```y^```가 출력되는 구조로 이루어져있다.  
-각각의 손실함수 li는 출력 이미지 y^와 yi사이의 차이를 측정한다.  
+image transformation network는 Deep residual CNN으로 input image $x$에 대한 output image $\hat{y}$가 출력되는 구조로 이루어져있다.  
+각각의 손실함수 li는 출력 이미지 $\hat{y}$와 $y_i$사이의 차이를 측정한다.  
+또한 네트워크는 Stochastic Gradient Descent (SGD)를 사용하여 훈련하는데 이에대한 가중치 W는 다음과 같이 나타낼 수 있다.  
+
+![img](./Asset/29.png)  
+
+Per-Pixel loss의 단점 해결 및 Perceptual loss의 측정을 더 잘할수 있도록 몇가지 최적화 기법을 이용해봤는데, 이러한 기법들의 핵심은 **Pre-trained된 Classification CNN이 손실함수에서 측정하려는 Perceptual한 정보들을 인코딩 하는 방법을 이미 습득했다는 것이다.**  
+
+따라서 본 논문에서는 pre-trained된 classification 네트워크 Φ를 손실함수에 이용했다고 한다.  
+Φ에 사용하는 loss는 2가지 종류로 구분되어있다.  
+
+    - feature reconstruction loss
+    - style reconstruction loss  
+
+수식에서 input image $x$에 대한 *content target* $y_c$와 *style target* $y_s$가 함께 주어진다.  
+
+예를들면    
+    - Style transfer task의 경우 content target $y_c$는 입력 이미지 $x$와 같고, 출력 이미지 $\hat{y}$는 $x = y_c$에 style $y_s$가 합쳐진 결과이다.  
+    - Super-resolution task의 경우 style reconstruction loss는 쓰이지 않고, content target $y_c$는 GT 값이며 $x$는 low-resolution의 입력이미지이다.  
+
+### 3.1 Image Transformation Networks  
+
+image transformation network는 DCGAN 네트워크 아키텍쳐를 사용했다.  
+네트워크에는 pooling layer를 사용하지 않고, stride와 fractionally stride를 사용했다.  
+
+여기서 fractionally stride는 Transposed Convolution을 뜻한다. 크기를 키울수 있는 효과가 있으며 결과적으로 Upsampling과 비슷한 효과를 볼수 있다.  
+>참고 (https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=laonple&logNo=221037627532)  
+
+![img](./Asset/30.gif)  
+
+논문으로 다시 돌아와서, 네트워크는 ResNet의 5개의 Residual Block을 사용하여 구성했다.  
+모든 non-Residual block은 spatial Batch Normalization과 ReLU를 수행하고, 출력 Layer에서는 pixel 값이 [0, 255] 사이의 값을 가지게 하기 위해서 thah 함수를 수행한다.  
+
+(Spatial BN은 그냥 공간상 BN으로, pytorch의 BatchNorm2D와 같다. 그냥 BN으로 알아들을면 될 것 같다.)  
+
+첫번째와 마지막 Layer는 9x9의 kernel을 사용하고, 나머지 Layer는 3x3의 kernel을 사용한다.  
+
+**Inputs and Outputs**  
+
+Style Transfer task에서 입력/출력 이미지는 3x256x256 사이즈를 가진다.  
+Super-resolution task에서는 출력 high-resolution 이미지가 3x288x288 사이즈, upsampling factor f(배)에 따라서 입력 row-resolution 이미지는 3x288/fx288/f 사이즈를 가진다.  
+
+또한 네트워크가 FCN이므로, 어떠한 resolution의 이미지라도 입력으로 받을 수 있다.  
