@@ -84,7 +84,7 @@ Coarse-tofine generator는 Generator를 하위 네트워크 2개(G1, G2)로 분�
 * G1: Global Generator Network (생성 네트워크)
 * G2: Local Enhancer Network (강화 네트워크)  
 
-발전기 G={G1, G2}는 다음과 같이 주어진다.  
+Generator G={G1, G2}는 다음과 같이 주어진다.  
 
 ![img](./Asset/24.png)  
 
