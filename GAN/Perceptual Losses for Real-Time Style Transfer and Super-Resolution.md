@@ -96,4 +96,9 @@ image transformation network는 DCGAN 네트워크 아키텍쳐를 사용했다.
 Style Transfer task에서 입력/출력 이미지는 3x256x256 사이즈를 가진다.  
 Super-resolution task에서는 출력 high-resolution 이미지가 3x288x288 사이즈, upsampling factor f(배)에 따라서 입력 row-resolution 이미지는 3x288/fx288/f 사이즈를 가진다.  
 
-또한 네트워크가 FCN이므로, 어떠한 resolution의 이미지라도 입력으로 받을 수 있다.  
+또한 네트워크가 Fully Convolutional network이므로, 어떠한 resolution의 이미지라도 입력으로 받을 수 있다.  
+
+**Downsampling and Upsampling**  
+
+upsampling factor f에 대해서, $log_2f$의 Convolution layer와 몇가지의 Residual block, 1/2의 stride를 사용했다.  
+또한 fixed upsampling보다 Fractionally-stride convolution을 사용하면 나머지 네트워크의 부분과 조화롭게 학습이 가능하다고한다.  
