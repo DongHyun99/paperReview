@@ -65,3 +65,31 @@ Style 기반의 Generator는 기존에 비해서 FID를 거의 20% 향상시켰�
 
 (여기서 FID란? https://m.blog.naver.com/chrhdhkd/222013835684) -> GAN의 품질 평가지표  
 
+latent space z대신 w를 사용하기 위해 truncation trick을 사용하였다. truncation trick은 low resolution에서만 적용하므로 high resolution에서는 세부적인 영향을 끼치지 않는다.  
+
+### 요약
+> bilinear up/downsampling, 긴 학습시간, 하이퍼 파라미터 튜닝, 그리고 앞서 말한 것들을 통해 FID를 이전보다 20% 가량 향상 시켰고, truncation trick을 low resolution에 적용해 z에서 w로의 변환을 성공적으로 이뤄냈다.  
+
+### 2.2. Prior art  
+
+대부분의 GAN architecture 관련 연구들은 Discriminator를 개선하는 것에 초점이 맞춰져있다.  
+Generator 관련 연구들은 주로 input latent space를 어떻게 형성할 것인가를 제안했다.  
+거기다가 GAN architecture의 중간에 latent code를 삽입하려는 연구는 거의 없었다.  
+
+## 3. Properties of the style-based generator  
+
+Style GAN의 Generator는 여러 style에 대한 sacle 별 수정을 통해 이미지의 합성이 가능하다. 
+각 style은 네트워크의 지역 (block)에서만 작용하기 때문에, 스타일들은 각 특정한 부분에 대한 영향만을 끼칠수 있다. (한마디로, 스타일들은 서로 엮이지 않고 style 고유의 표현할 부분을 표현한다는 것 같다.)  
+ 
+### 3.1. Style mixing  
+
+style localize를 위해 학습중에 latent code를 한개가 아닌 두개를 사용해서 특정한 비율만큼 이미지를 생성하는 mixing regularization을 사용한다.  
+즉 두 latent code z1, z2를 통해 w1, w2가 만들어지고 배치한다.  
+
+![img](./Asset/34.png)  
+위의 그림은 두개의 latent code를 통해 다양한 척도로 혼합했을 때 생성된 이미지를 보여준다.  
+
+![img](./Asset/35.png)  
+훈련 샘플에서 mixing regularization의 비율을 조정했을 때 FFHQ 데이터 셋의 FID이다.  
+
+### 3.2. Stochastic variation  
