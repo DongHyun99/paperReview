@@ -93,3 +93,43 @@ style localize를 위해 학습중에 latent code를 한개가 아닌 두개를 
 훈련 샘플에서 mixing regularization의 비율을 조정했을 때 FFHQ 데이터 셋의 FID이다.  
 
 ### 3.2. Stochastic variation  
+
+사람의 얼굴에는 머리카락, 기미, 주근깨, 피부 모공등의 stochastic한 특징들이 존재한다.  
+만약 이러한 특징들이 정확한 분포를 따른다면 이미지에 손실을 입히지 않고 특징들을 추출할 수 있을 것이다.  
+
+기존의 Generator는 z라는 입력 하나에만 의존하기 때문에 디테일한 특징을 바꿔줄수 없었지만, StyleGAN은 Noise를 추가하여 이러한 점을 개선했다.  
+
+![img](./Asset/37.png)  
+
+noise를 적용했을 때 머리카락과 배경, 피부 모공 등에서 더 디테일한 표현이 가능해졌다.  
+또한 noise는 stochastic한 측면에만 영향을 끼치고 high-level의 측면은 그대로인 것을 알수 있다.  
+
+![img](./Asset/36.png)  
+
+(a)는 noise를 전체 layer에서 적용했을때, (b)는 noise를 적용하지 않았을 때이다.  
+(c)는 64~1024의 특정 layer에 noise를 적용했을 때, (d)는 4~32의 특정 layer에 noise를 적용했을 때이다.  
+
+위 그림처럼 논문은 noise에 따른 효과는 layer 마다 다르게 나타나고, stochastic variation을 생성하는 가장 쉬운 방법이 noise라고 주장한다.  
+
+### 요약  
+> noise는 각 layer마다 적용하고, 사람 얼굴의 여러 스타일(머리카락, 모공, 배경 등)의 디테일한 요소들의 표현을 해주는 역할을 한다.  
+
+### 3.3. Separation of global effects from stochasticity  
+
+Style-based generator의 feature map은 동일 값으로 scale과 biase가 조정되기 때문에 style이 전체 이미지에 영향을 끼친다.  
+따라서 포즈, 조명, 배경 스타일 등의 전역적인 특징들은 일관성있게 제어된다.  
+한편 noise는 독립적으로 추가되어 stochastic variation을 제어하는데에 이상적으로 사용된다.  
+포즈와 같은 전역적인 특징들에 대해서noise가 제어 혹은 간섭하려하면 공간적으로 일관되지 않아 Discriminator가 패널티를 부여한다.  
+
+## 4. Disentanglement studies  
+
+![img](./Asset/38.png)  
+
+Disentanglement에 대해 여러가지 정의가 있기는 하지만, 기본적으로 linear subspace(선형 하위공간)로 구성된 latent space이다. 각 space는 하나의 variation factor을 제어한다.  
+
+각 factor가 조합된 Z에서 표본추출을 하기 위해서는 training data의 밀도와 일치해야 하는데 위의 그림과 같이 입력 잠재분포와 일반적인 dataset으로 disentangle되는것을 방지한다.  
+
+이게 무슨 의미냐면, training dataset은 (a)와 같은 분포로 feature에 대한 space가 형성이 되어 있을 때, (b)와 같은 형태의 feature를 가지고는 (a)의 고정된 분포를 non linear하게 mapping 할 수 밖에 없다. 즉 분포가 어그러져 원하는 feature에 대한 mapping이 힘들다. 따라서 mapping network를 통해 Z를 W로 변화시켜, 학습 데이터셋의 확률 분포와 비슷한 형태를 mapping 시키게 된다.
+이를 통해 latent space w는 이전보다 disentangle 하게 된다. (style에 대한 분리가 가능하여 어떠한 feature에 대해 명확하게 이미지를 생성하기 쉽다는 것 같다.)  
+
+다시 본론으로 돌아가서 Generator 구조의 이점중 하나로 latent space는 (b)처럼 고정된 분포로 있을 필요 없이 학습된 f(z)에 의해 분포가 유도된다.  
