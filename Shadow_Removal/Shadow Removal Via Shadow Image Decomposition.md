@@ -1,6 +1,7 @@
 # Shadow Removal via Shadow Image Decomposition (SID)  
 
 2019년 ICCV에서 제안된 그림자 제거 논문이다.  
+(https://openaccess.thecvf.com/content_ICCV_2019/papers/Le_Shadow_Removal_via_Shadow_Image_Decomposition_ICCV_2019_paper.pdf)
 
 ## Abstract  
 
@@ -29,3 +30,32 @@ linear illumination transformation (선형 조명 변환)을 사용하여 shadow
 
 또한 저자는 shadow matting 기술을 사용해 그림자의 음영 영역을 처리한다고 한다. illumination model을 image decomposition formulation에 통합하여, shadow image, parameter, shadow density matte (그림자 밀도 matte)를 조합하여 shadow-free image를 생성한다. (위의 그림과 같다.)  
 
+또한 Shadow matte를 자동으로 정확하게 예측하기 위한 두번째 network인 M-Net을 제안한다.  
+
+SP-Net만으로도 ISTD dataset의 RMSE를 13.3->9.5로 낮추었고 M-Net을0 추가한 경우 7.9까지 낮아졌다.  
+이같은 성능은 현실적인 그림자 제거 방식에 의해서 가능하다. 먼저 이미지의 shadow parameter와 shadow matte를 추정하고, 추정된 parameter 값을 통해 shadow-free 이미지에 그림자를 추가한다. parameter 값을 변경시 그림자의 효과도 변화한다. 이를 통해 train data를 증강시킬 수 있다.  
+
+이렇게 증강시킨 ISTD dataset을 이용하면, 이전보다 RMSE가 6% 가량 더 낮아진다.  
+요약하자면 다음과 같다.  
+
+    - 단순화된 물리적인 illumination model & image decomposition formulation을 통해 그림자 제거에 대한 새로운 접근법을 제시
+
+    - 단순화된 물리적인 illumination model & image decomposition formulation을 기반으로 그림자 증강 방법을 제시  
+
+    - 제안한 방법은 ISTD dataset에서 SOTA의 결과를 달성함  
+
+## 2. Related Works  
+
+(생략)  
+
+## 3. Shadow and Image Decomposition Model  
+
+### 3.1. Shadow Illumination Model  
+
+Shadow Illumination model이란?  
+
+mapping 함수인 T를 통해 shadow pixel $I_x^{shadow}$를 non shadow pixel로 변환한다.  
+
+$I_x^{shadow-free}(\lambda)=L_x^d(\lambda)R_x(\lambda)+L_x^a(\lambda)R_x(\lambda)$  
+
+$I_x^{shadow-free}(\lambda)$는 x지점에서 반사되는 파장 $\lambda$의 강도이고, L과 R은 각각 Illumination(조명)과 reflectance respectively(반사율)이며, $L^d$는 직접조명, $L^a$은 주변부 조명이다.  
