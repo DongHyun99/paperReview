@@ -40,7 +40,8 @@ SP-Net만으로도 ISTD dataset의 RMSE를 13.3->9.5로 낮추었고 M-Net을0 �
 
     - 단순화된 물리적인 illumination model & image decomposition formulation을 통해 그림자 제거에 대한 새로운 접근법을 제시
 
-    - 단순화된 물리적인 illumination model & image decomposition formulation을 기반으로 그림자 증강 방법을 제시  
+    - 단순화된 물리적인 illumination model & image decomposi
+    tion formulation을 기반으로 그림자 증강 방법을 제시  
 
     - 제안한 방법은 ISTD dataset에서 SOTA의 결과를 달성함  
 
@@ -54,8 +55,28 @@ SP-Net만으로도 ISTD dataset의 RMSE를 13.3->9.5로 낮추었고 M-Net을0 �
 
 Shadow Illumination model이란?  
 
-mapping 함수인 T를 통해 shadow pixel $I_x^{shadow}$를 non shadow pixel로 변환한다.  
+mapping 함수인 T를 통해 shadow pixel $I_x^{shadow}$를 non-shadow pixel로 변환한다.  
 
-$I_x^{shadow-free}(\lambda)=L_x^d(\lambda)R_x(\lambda)+L_x^a(\lambda)R_x(\lambda)$  
+$I_x^{shadow-free}(\lambda)=L_x^d(\lambda)R_x(\lambda)+L_x^a(\lambda)R_x(\lambda)$ (1)  
 
 $I_x^{shadow-free}(\lambda)$는 x지점에서 반사되는 파장 $\lambda$의 강도이고, L과 R은 각각 Illumination(조명)과 reflectance respectively(반사율)이며, $L^d$는 직접조명, $L^a$은 주변부 조명이다.  
+점 x에 그림자를 생성하기 위해서 Occluder 직접 조명과 차단하지 않으면 x에 영향을 주는 주변부 조명의 일부를 차단한다.  
+
+x에 대한 수식은 다음과 같다.  
+
+$I_x^{shadow}(\lambda)=a_x(\lambda)L_x^a(\lambda)R_x(\lambda)$ (2)  
+
+$a_x(\lambda)$는 파장 $\lambda$에서 x에 도달하는 주변부 조명의 나머지 부분에 대한 attenuation factor(감쇠 계수)를 의미한다.  
+(1), (2)의 수식을 통해 shadow-free pixel을 shadow pixel의 선형 함수로 나타낼 수 있게 된다.  
+
+$I_x^{shadow-free}(\lambda)=L_x^d(\lambda)R_x(\lambda)+a_x(\lambda)^{-1}I_x^{shadow}(\lambda)$ (3)  
+
+카메라로 사진을 촬영했을 때 전반적인 전처리 과정에서 이같은 선형 함수가 유지되므로 밝은 픽셀 x의 색에 대한 강도를 그림자 값의 선형함수로 표현이 가능하다.  
+
+$I_x^{shadow-free}(k) = w_k \times I_x^{shadow}(k) + b_k$ (4)  
+
+$I_x(k)$는 color channel k (RGB color channel에 속해 있는 channel중 하나)로 이미지 I의 픽셀 x의 값을 나타낸다.  
+$b_k$는 직접 조명에 대한 카메라가 인식한 값, $w_k$는 한 color channel 안에 있는 한 pixel에 대한 주번부 조명의 attenuation factor를 의미한다.  
+
+또한 논문은 그림자로 가려진 부분의 소재의 특성을 잘 표현하기 위해서 각 color channel을 독립적으로 모델링한다고 설명했다.  
+
