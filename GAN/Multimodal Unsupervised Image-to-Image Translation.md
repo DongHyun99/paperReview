@@ -12,6 +12,7 @@ Unsupervised Image-to-Image Translation은 이미지 pair에 대한 학습이 �
 ### 요약  
 > 기존의 one-to-one mapping 방식이 아닌 multimodal 한 방식으로 unsupervised image translation을 해보자
 
+---
 ## 1 Introduction
 
 Image pair dataset이 있을 경우 생성 모델은 conditional model 또는 간단한 regression model을 사용할 것이다.  
@@ -42,6 +43,7 @@ X1 이미지를 X2로 변환하기 위해 content를 변환할 대상 style spac
 ### 요약
 > latent space를 content space와 style space로 분리하고 각 도메인 이미지들을 매핑한다. 이를 통해 content는 보존하고 style을 multimodal하게 변환할 수 있게된다. 츨력 이미지들은 사용자가 제공하는 예제 이미지에 의해 제어된다.  
 
+---
 ## 2 Related Works  
 
     - Generative adversarial networks (GAN)
@@ -75,3 +77,45 @@ InfoGAN, β-VAE는 unsupervised하게 disentangled representation을 학습했�
 ### 3.1 Assumptions  
 
 $x_1 \in X_1$과 $x_2 \in X_2$의 2가지 서로 다른 도메인의 이미지가 있다.  
+Unsupervised image-to-image translation 작업에서는 공통 분포인 $p(x_1, x_2)$을 사용하지 않고 각 분포 $p(x_1)$, $p(x_2)$를 사용하여 샘플을 추출한다. (pair 데이터를 사용하지 않는다는 의미인듯 하다.)  
+$p(x_{1->2}|x_1)$과 $p(x_{2->1}|x2)$를 이용하여 $p(x_2|x_1)$과 $p(x_1|x_2)$를 추정하는것이 목표이다. ($x_{1->2}$는 x1을 x2로 변환하여 생성된 샘플을 의미한다.)  
+
+$p(x_{1->2}|x_1)$과 $p(x_{2->1}|x2)$는 복잡하고 multimodal 한 분포를 가진다. 따라서 deterministic한 모델은 잘 작동하지 않는다.  
+
+이같은 문제를 해결하기 위해 부분적으로 공유된 latent space를 가정한다.  
+이미지 $x_i \in X_i$는 두 도메인이 공유하는 latent space인 content latent $c \in C$와 개별적인 도메인의 고유한 style $s_i \in S_i$를 가정한다.  
+
+공통 분포의 이미지쌍 $(x_1, x_2)$는 $x_1 = G_1^*(c,s_1)$ $x_2 = G_2^*(c,s_2)$에 의해 생성된다. 그리고 $G_1^*, G_2^*$는 역이되는 인코더 $E_1=(G_1^*)^{-1}, E_2=(G_2^*)^{-1}$를 가지고 있다고 가정한다.  
+
+UNIT의 경우 공유되는 latent space가 완전하지만, MUNIT은 부분적으로 공유하며, style은 각 도메인 별로 구분한다는 다른점을 가진다. 이는 many-to-many task에서 더 합리적이다.  
+
+---
+### 3.2 Model  
+
+<img src='Asset/40.png'>  
+
+
+MUNIT은 2가지의 auto-encoder로 구성되며, 각각의 latent code는 content c와 style s로 구성되어 있다. 변환된 이미지는 대상 도메인의 실제 이미지와 구별하지 못하도록 하는 adversarial한 목표 (점선)와 이미지, latent code를 재구성하는 bidirectional reconstruction 목표를 (파선) 통해 모델을 훈련시킨다.  
+
+---
+모델의 구조는 마치 UNIT과 비슷하다. 모델은 각 도메인 $X_i$에 대한 encoder $E_i$와 decoder $G_i$로 구성된다.  
+그림의 (a)부분과 같이 latent space는 content $c_i$와 style $s_i$로 분해되며 이에대한 공식은 다음과 같이 정의할 수 있다.  S
+> $(c_i, s_i) = (E_i^c(x_i),E_i^s(x_i))$  
+
+image-to-image translation은 (b)와 같이 encoder-decoder 쌍을 통해 수행된다.  
+예를 들어 $x_1 \in X_1$의 이미지를 $X_2$로 변환하려면 먼저 $c_1=E_1^c(x_1)$을 추S출하고 분포 $q(s_2)$~$N(0,I)$에서 style latent $s_2$를 무작위로 추출한다.  
+
+- Bidirectional reconstruction loss.
+
+    서로 반대인 encoder와 decoder 쌍을 학습하기 위해 image->latent->image and latent -> image -> latent의 모든 방향에서 reconstruction(재구성)을 장려할수 있게 해준다.  
+
+    - Image reconstruction: 데이터 분포에서 샘플링 된 이미지가 encoding 및 decoding 후에 재구성 할수 있게 해줌
+    ![img](./Asset/41.png)
+
+    - Latent reconstruction: translation 할 때 latent space 샘플링된 latent code (style 및 content)가 주어지면 decoding 및 encoding 후에 재구성 할수 있게 해줌
+    ![img](./Asset/42.png)  
+    $q(s_2)$는 $N(0, I)$ 확률 분포에서 주어지며 $p(c_1)$는 $c_1=E_1^c(x_1)$와 $x_1$~$p(x_1)$에서 주어지게 된다.  
+
+$L_{recon}^{x2}, L_{recon}^{c2}, L_{recon}^{s1}$는 모두 비슷한 양상으로 정의되고, 선명한 이미지의 출력을 위해 L1 reconstruction loss를 사용한다.  
+
+- Adversarial loss.  
