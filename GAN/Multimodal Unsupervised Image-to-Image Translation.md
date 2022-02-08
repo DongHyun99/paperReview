@@ -109,10 +109,10 @@ image-to-image translation은 (b)와 같이 encoder-decoder 쌍을 통해 수행
 
     서로 반대인 encoder와 decoder 쌍을 학습하기 위해 image->latent->image and latent -> image -> latent의 모든 방향에서 reconstruction(재구성)을 장려할수 있게 해준다.  
 
-    - Image reconstruction: 데이터 분포에서 샘플링 된 이미지가 encoding 및 decoding 후에 재구성 할수 있게 해줌
+    - Image reconstruction: 데이터 분포에서 샘플링 된 이미지가 encoding 및 decoding 후에 재구성 할수 있게 해줌  
     ![img](./Asset/41.png)
 
-    - Latent reconstruction: translation 할 때 latent space 샘플링된 latent code (style 및 content)가 주어지면 decoding 및 encoding 후에 재구성 할수 있게 해줌
+    - Latent reconstruction: translation 할 때 latent space 샘플링된 latent code (style 및 content)가 주어지면 decoding 및 encoding 후에 재구성 할수 있게 해줌  
     ![img](./Asset/42.png)  
     $q(s_2)$는 $N(0, I)$ 확률 분포에서 주어지며 $p(c_1)$는 $c_1=E_1^c(x_1)$와 $x_1$~$p(x_1)$에서 주어지게 된다.  
 
