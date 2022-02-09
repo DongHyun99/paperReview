@@ -21,6 +21,7 @@ Image pair dataset이 있을 경우 생성 모델은 conditional model 또는 �
 많은 경우에 domain mappimg 작업은 multimodal하다. 예를 들어 겨울 이미지는 날씨, 타이밍, 조명 등을 통해 여러가지의 여름 이미지로 변환할수 있다. 하지만 대부분의 연구에서는 deterministic하고 단일 mapping으로 가정한다.  
 결과적으로 출력가능한 모든 확률분포에 대한 추정이 불가능하다.  
 모델에 noise를 주어 stochastic하게 만든다해도, 네트워크가 이를 무시하는 방법을 학습할 수도 있다. (styleGAN도 NVIDIA에서 나왔는데 왜 이런말을 할까..)  
+> 참고로 styleGAN은 style을 disentangled된 latent를 AdaIN을 통해 지속적으로 받아오는 것으로 style을 가져온다. noise는 style을 조정하는 것이 아니라, style의 세부적인 디테일을 표현하는 것이다.  
   
 ---  
 <img src='Asset/39.png'>  
@@ -72,6 +73,7 @@ MUNIT은 desentangled representations learning을 사용했다.
 InfoGAN, β-VAE는 unsupervised하게 disentangled representation을 학습했다.  
 일부 연구들은 style과 content를 분리하는데에 초점을 맞추고 있다.  
 
+---
 ## 3 Multimodal Unsupervised Image-to-image Translation
 
 ### 3.1 Assumptions  
@@ -118,4 +120,29 @@ image-to-image translation은 (b)와 같이 encoder-decoder 쌍을 통해 수행
 
 $L_{recon}^{x2}, L_{recon}^{c2}, L_{recon}^{s1}$는 모두 비슷한 양상으로 정의되고, 선명한 이미지의 출력을 위해 L1 reconstruction loss를 사용한다.  
 
-- Adversarial loss.  
+- Adversarial loss. 
+
+    변환된 이미지의 분포를 target 이미지의 분포와 mapping 하기 위해 GAN을 사용한다.  
+    ![img](./Asset/43.png)  
+
+- Total loss.  
+
+    ![img](./Asset/44.png)  
+    결론적으로 encoder와 decoder 쌍을 학습하기 위한 $L_{recon}^{x1}, L_{recon}^{x2}$과 latent content, latent style에 대한 $L_{recon}^{c1}, L_{recon}^{c2}, L_{recon}^{s1}, L_{recon}^{s2}$, 마지막으로 생성모델에 대한 Discriminator의 적대적 손실함수 $L_{GAN}^{x1}, L_{GAN}^{x2}$를 합치는 형태로 전체 loss를 표현할 수 있다.  
+    여기서 $\lambda_x, \lambda_c, \lambda_s$는 reconstruction을 제어하는 가중치다.  
+
+### 요약
+> MUNIT은 latent space를 content와 style로 나누고 target 도메인과 원본 도메인은 서로 content latent space는 공유하지만 style latent space를 따로 둔다. encoder를 통해 style과 conetent를 뽑아낸다음, target 도메인의 style을 content와 재결합하여 이미지를 생성한다. style의 latent를 조절하면 multimodal한 이미지들을 생성할 수 있다.
+따라서 모델은 auto-encoder 형태의 Generator 부분과 적대적 손실을 위한 Discrimonator를 사용했다. 두 도메인의 latent space를 맵핑하기 위해 두 도메인에 대한 image reconstruction loss, content reconstruction loss, style reconstruction loss, adversarial loss가 각 2개씩 증 8개의 loss를 필요로 한다.  
+
+(요약하면서 든 생각인데 이렇게 각각의 도메인에 대한 학습을 할꺼면 차라리 cycle consistancy도 넣었으면 좋지 않았을까 하는 생각이 든다.)  
+
+---
+## 4 Theoretical Analysis
+
+논문의 저자가 제안한 loss function을 최소화 하게 되면  
+
+    1. encoding과 generate 중에 latent가 잘 mapping 됨
+    2. 유도된 2개의 공통된 이미지 분포의 일치 (recon loss를 말하는 듯)
+    3. weak cycle consistancy로 이어지게 됨
+
